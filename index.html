@@ -355,75 +355,46 @@ body::before {
     margin-bottom: 10px;
 }
 
-.slider {
-    height: 57px;
-    position: relative;
-    border-radius: 50px;
-    padding: 5px;
+.join-button {
+    width: 100%;
+    min-height: 57px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid rgba(255,224,160,.7);
-    background: linear-gradient(
-        100deg,#8d6427,#d4a34d,#a47731
-    );
+    border-radius: 50px;
+    padding: 12px 18px;
+    background: linear-gradient(100deg,#8d6427,#d4a34d,#a47731);
     box-shadow:
         0 0 18px rgba(233,189,97,.25),
         inset 0 1px 4px rgba(255,255,255,.25);
-    overflow: hidden;
-    touch-action: pan-y;
-}
-
-.slider-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-left: 38px;
+    color: #1c160c;
+    font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 900;
     letter-spacing: 1.5px;
-    color: #1c160c;
-    pointer-events: none;
-    transition: opacity .2s;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
 }
 
-.slider-text::after {
-    content: "  »»";
-    font-size: 16px;
-    margin-left: 7px;
-    animation: arrows 1s infinite;
+.join-button:hover {
+    box-shadow:
+        0 0 24px rgba(233,189,97,.38),
+        inset 0 1px 4px rgba(255,255,255,.25);
 }
 
-@keyframes arrows {
-    50% { opacity: .3; }
+.join-button:active {
+    transform: scale(.98);
 }
 
-.slider-thumb {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    height: 45px;
-    width: 45px;
-    border-radius: 50%;
-    background: linear-gradient(145deg,#fff7dc,#fff,#e3c17d);
-    color: #4b3210;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 21px;
-    font-weight: 900;
-    box-shadow: 0 2px 12px rgba(0,0,0,.3);
-    cursor: grab;
-    z-index: 2;
-    touch-action: none;
-    user-select: none;
+.join-button:focus-visible {
+    outline: 2px solid var(--gold2);
+    outline-offset: 3px;
 }
 
-.slider-thumb:active {
-    cursor: grabbing;
-}
-
-.slider.success .slider-text {
-    opacity: 0;
+.join-button span {
+    font-size: 17px;
+    margin-left: 8px;
 }
 
 .slider-hint {
@@ -432,7 +403,6 @@ body::before {
     font-size: 8px;
     margin-top: 9px;
 }
-
 .footer {
     text-align: center;
     font-size: 8px;
@@ -587,20 +557,12 @@ src="https://www.facebook.com/tr?id=1639268404908082&ev=PageView&noscript=1"
             YOUR NEXT STEP STARTS HERE
         </div>
 
-        <div class="slider" id="slider">
-
-            <div class="slider-text" id="sliderText">
-                SLIDE TO EXPLORE CHANNEL
-            </div>
-
-            <div class="slider-thumb" id="sliderThumb">
-                ›
-            </div>
-
-        </div>
+        <button type="button" class="join-button" id="joinButton">
+            EXPLORE CHANNEL <span>›</span>
+        </button>
 
         <p class="slider-hint">
-            DRAG THE GOLDEN ARROW TO CONTINUE
+            TAP THE BUTTON TO CONTINUE
         </p>
 
     </section>
@@ -612,91 +574,11 @@ src="https://www.facebook.com/tr?id=1639268404908082&ev=PageView&noscript=1"
 </main>
 
 <script>
-const slider = document.getElementById("slider");
-const thumb = document.getElementById("sliderThumb");
-const sliderText = document.getElementById("sliderText");
-
+const joinButton = document.getElementById("joinButton");
 const channelLink = "https://t.me/+17ITwzplTqswYzI9";
 
-let dragging = false;
-let startX = 0;
-let currentX = 0;
-let maxMove = 0;
-let completed = false;
-
-function getMaxMove() {
-    return slider.clientWidth - thumb.offsetWidth - 10;
-}
-
-function setPosition(x) {
-    currentX = Math.max(0, Math.min(x, maxMove));
-    thumb.style.left = (5 + currentX) + "px";
-}
-
-thumb.addEventListener("pointerdown", function(e) {
-
-    if (completed) return;
-
-    dragging = true;
-    startX = e.clientX - currentX;
-    maxMove = getMaxMove();
-
-    thumb.setPointerCapture(e.pointerId);
-});
-
-thumb.addEventListener("pointermove", function(e) {
-
-    if (!dragging || completed) return;
-
-    setPosition(e.clientX - startX);
-
-});
-
-thumb.addEventListener("pointerup", function() {
-
-    if (!dragging || completed) return;
-
-    dragging = false;
-
-    if (currentX >= maxMove * 0.88) {
-
-        completed = true;
-        slider.classList.add("success");
-
-        thumb.style.left = (maxMove + 5) + "px";
-        thumb.innerHTML = "✓";
-
-        sliderText.innerText = "OPENING CHANNEL...";
-
-        setTimeout(function() {
-            window.open(channelLink, "_blank", "noopener");
-            resetSlider();
-        }, 350);
-
-    } else {
-        setPosition(0);
-    }
-
-});
-
-thumb.addEventListener("pointercancel", function() {
-    dragging = false;
-    if (!completed) setPosition(0);
-});
-
-function resetSlider() {
-    setTimeout(function() {
-        completed = false;
-        currentX = 0;
-        setPosition(0);
-        thumb.innerHTML = "›";
-        slider.classList.remove("success");
-    }, 1200);
-}
-
-window.addEventListener("resize", function() {
-    maxMove = getMaxMove();
-    if (!dragging && !completed) setPosition(0);
+joinButton.addEventListener("click", function() {
+    window.open(channelLink, "_blank", "noopener");
 });
 </script>
 
